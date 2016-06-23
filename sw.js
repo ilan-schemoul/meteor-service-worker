@@ -18,7 +18,7 @@ self.addEventListener('fetch', (event) => {
         }
       }
 
-      let request = event.request.clone();
+      const request = event.request.clone();
 
       return fetch(request).then((repFromNetwork) => {
         if (!repFromNetwork || repFromNetwork.status !== 200 || repFromNetwork.type !== 'basic' ||
