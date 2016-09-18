@@ -25,6 +25,7 @@ some changes to basic snippets has been made.
 ## How the service worker is working
 So here's how this service worker is really working, once it's installed
 (after the client has visited your website once) :
+
 1. The browser asks for a specific url (for instance http://facebook.com)
 2. The service worker tries to ask the server the HTML (which with Meteor
 is *only* composed of request (`<link>` and `<script>`) to CSS and
