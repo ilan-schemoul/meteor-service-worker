@@ -19,8 +19,12 @@ anything in the cache of the browser.
 To make Meteor working fully offline we just need to save javascript and
 CSS files into browser cache and serve it from the cache if the user
 isn't connected to your server.
-**SERVICE WORKER** is the solution. Due to specificities of Meteor,
-some changes to basic snippets has been made.
+**SERVICE WORKER** is the solution to make the website working offline.
+Due to specificities of Meteor, some changes to basic snippets has been made.
+Service worker caches JS (necessary to render the website) but also
+CSS, fonts, images or whatever your websites needs. **BUT DOES NOT CACHE
+DATABASE**, to cache the database you need
+(ground:db)[https://github.com/GroundMeteor/db]
 
 ## How the service worker is working
 So here's how this service worker is really working, once it's installed
