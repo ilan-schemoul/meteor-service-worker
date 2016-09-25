@@ -4,7 +4,7 @@ self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open('v1.0').then((cache) => {
             return cache.addAll([
-                '/SWlayout',
+                HTMLToCache,
             ]);
         })
     );
@@ -46,7 +46,7 @@ self.addEventListener('fetch', (event) => {
             }).catch(() => {
                 // If HTML is requested get the layout from the cache to let router take the control
                 if (/text\/html/.test(event.request.headers.get('accept'))) {
-                    return caches.open('v1.0').then(cache => cache.match('/SWlayout'));
+                    return caches.open('v1.0').then(cache => cache.match(HTMLToCache));
                 }
                 // if another ressource than html is requested return it from the cache
                 return caches.open('v1.0').then(cache => cache.match(request));
