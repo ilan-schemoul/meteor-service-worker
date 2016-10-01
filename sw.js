@@ -1,56 +1,89 @@
 const HTMLToCache = '/';
+const version = 'MSW V0.3';
 
 self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open('v1.0').then((cache) => {
-            return cache.addAll([
-                HTMLToCache,
-            ]);
-        })
-    );
+  event.waitUntil(caches.open(version).then((cache) => {
+    cache.add(HTMLToCache).then(self.skipWaiting());
+  }));
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+  caches.keys().then(cacheNames => Promise.all(cacheNames.map((cacheName) => {
+    if (version !== cacheName) return caches.delete(cacheName);
+  }))).then(self.clients.claim())
+  );
 });
 
 self.addEventListener('fetch', (event) => {
-    event.respondWith(
-        caches.match(event.request.clone()).then((repFromCache) => {
-            if (repFromCache) {
-                const resourceType = repFromCache.headers.get('content-type');
+  const requestToFetch = event.request.clone();
+  event.respondWith(
+  caches.match(event.request.clone()).then((cached) => {
+    // We don't return cached HTML (except if fetch failed)
+    if (cached) {
+      const resourceType = cached.headers.get('content-type');
+      // We only return non css/js/html cached response e.g images
+      if (!hasHash(event.request.url) && !/text\/html/.test(resourceType)) {
+        return cached;
+      }
 
-                // We only return non css/js/html response e.g images
-                if (!/\.js|\.css/.test(repFromCache.url) && !/text\/html/.test(resourceType)) {
-                    return repFromCache;
-                }
+      // If the CSS/JS didn't change since it's been cached, return the cached version
+      if (hasHash(event.request.url) && hasSameHash(event.request.url, cached.url)) {
+        return cached;
+      }
+    }
+    return fetch(requestToFetch).then((response) => {
+      const clonedResponse = response.clone();
+      const contentType = clonedResponse.headers.get('content-type');
 
-                // If the CSS/JS didn't change since it's been cached, return the cached version
-                if (/\?hash/.test(event.request.url) &&
-                    /\?hash=(.*)/.exec(event.request.url)[1] === /[?&]hash=(.*)/.exec(repFromCache.url)[1]) {
-                    return repFromCache;
-                }
+      if (!clonedResponse || clonedResponse.status !== 200 || clonedResponse.type !== 'basic'
+      || /\/sockjs\//.test(event.request.url)) {
+        return response;
+      }
+
+      if (/html/.test(contentType)) {
+        caches.open(version).then(cache => cache.put(HTMLToCache, response.clone()));
+      } else {
+        // Delete old version of a file
+        if (hasHash(event.request.url)) {
+          caches.open(version).then(cache => cache.keys().then(keys => keys.forEach((asset) => {
+            if (new RegExp(removeHash(event.request.url)).test(removeHash(asset.url))) {
+              cache.delete(asset);
             }
+          })));
+        }
 
-            const request = event.request.clone();
-
-            return fetch(request).then((repFromNetwork) => {
-                if (!repFromNetwork || repFromNetwork.status !== 200 || repFromNetwork.type !== 'basic' ||
-                    /\/sockjs\//.test(event.request.url) || /html/.test(repFromNetwork.headers.get('content-type'))) {
-                    return repFromNetwork;
-                }
-
-                const responseToCache = repFromNetwork.clone();
-
-                caches.open('v1.0').then((cache) => {
-                    cache.put(event.request, responseToCache);
-                });
-
-                return repFromNetwork;
-            }).catch(() => {
-                // If HTML is requested get the layout from the cache to let router take the control
-                if (/text\/html/.test(event.request.headers.get('accept'))) {
-                    return caches.open('v1.0').then(cache => cache.match(HTMLToCache));
-                }
-                // if another ressource than html is requested return it from the cache
-                return caches.open('v1.0').then(cache => cache.match(request));
-            });
-        })
-    );
+        caches.open(version).then(cache => cache.put(event.request, response.clone()));
+      }
+      return response;
+    }).catch(() => {
+      if (hasHash(event.request.url)) return caches.match(event.request.url);
+      // If the request URL hasn't been served from cache and isn't sockjs we suppose it's HTML
+      else if (!/\/sockjs\//.test(event.request.url)) return caches.match(HTMLToCache);
+      // Only for sockjs
+      return new Response('No connection to the server', {
+        status: 503,
+        statusText: 'No connection to the server',
+        headers: new Headers({ 'Content-Type': 'text/plain' }),
+      });
+    });
+  })
+  );
 });
+
+function removeHash(element) {
+  if (typeof element === 'string') return element.split('?hash=')[0];
+}
+
+function hasHash(element) {
+  if (typeof element === 'string') return /\?hash=.*/.test(element);
+}
+
+function hasSameHash(firstUrl, secondUrl) {
+  if (typeof firstUrl === 'string' && typeof secondUrl === 'string') {
+    return /\?hash=(.*)/.exec(firstUrl)[1] === /\?hash=(.*)/.exec(secondUrl)[1];
+  }
+}
+
+// Service worker created by Ilan Schemoul alias NitroBAY as a specific Service Worker for Meteor
+// Please see https://github.com/NitroBAY/meteor-service-worker for the official project source
