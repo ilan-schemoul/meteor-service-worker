@@ -1,5 +1,6 @@
 # Meteor Service Worker
-An universal Service Worker for meteor apps
+An universal Service Worker for meteor apps.
+
 Version [0.3](#head1234). If you have a lower version please update to 0.3 (at least),
 because old versions didn't clean not used file (notice that the new version
 will recreate a new cache and delete the old one so update the code will
