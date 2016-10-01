@@ -1,5 +1,9 @@
 # Meteor Service Worker
 An universal Service Worker for meteor apps
+Version [0.3](#head1234). If you have a lower version please update to 0.3 (at least),
+because old versions didn't clean not used file (notice that the new version
+will recreate a new cache and delete the old one so update the code will
+be enough to free wasted spaces).
 
 ## The problem
 
@@ -25,13 +29,13 @@ isn't connected to your server.
 Due to specificities of Meteor, some changes to basic snippets has been made.
 Service Worker caches JS (necessary to render the website) but also
 CSS, fonts, images or whatever your websites needs. **BUT DOES NOT CACHE
-DATABASE**, to cache the database you need
-(ground:db)[https://github.com/GroundMeteor/db]
-Besides the Service Worker caches elements as images, and CSS/JS (SW
-doesn't serves old cached CSS/JS if the server has a new version) and return it
-without asking the server a new version, so you're app is faster. This
-cache is more powerful than caching with proper headers
+DATABASE**, to cache the database you need [ground:db](https://github.com/GroundMeteor/db)
+
+The SW returns cached version even when online, so you're app is faster.
+This cache is more powerful than caching with proper headers
 (leverage browser caching) as SW has an higher priority.
+Do not worry, if a CSS/JS has changed, the SW will do ask a new version
+if online.
 
 ## <a name="how"></a>How the Service Worker is working
 
@@ -96,7 +100,7 @@ another relative url (as '/index').
 + 0.2
     - Add Readme.md.
     - Service worker now caches one HTML file and update it if needed.
-+ 0.3 Major update.
++ 0.3 Major update. <a name="head1234"></a>
     - Full refactoring (e.g : properer and more separated code).
     - When variable 'version' changes, the SW cleans old caches so it keeps
     only the new cache.
