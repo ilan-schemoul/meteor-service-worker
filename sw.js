@@ -42,7 +42,7 @@ self.addEventListener('fetch', (event) => {
       }
 
       if (/html/.test(contentType)) {
-        caches.open(version).then(cache => cache.put(HTMLToCache, response.clone()));
+        caches.open(version).then(cache => cache.put(HTMLToCache, clonedResponse));
       } else {
         // Delete old version of a file
         if (hasHash(event.request.url)) {
@@ -53,7 +53,7 @@ self.addEventListener('fetch', (event) => {
           })));
         }
 
-        caches.open(version).then(cache => cache.put(event.request, response.clone()));
+        caches.open(version).then(cache => cache.put(event.request, clonedResponse));
       }
       return response;
     }).catch(() => {
