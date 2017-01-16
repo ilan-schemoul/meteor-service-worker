@@ -86,7 +86,7 @@ localhost (the URL you access when you make local development).
 All instructions below require you to to launch your Developer Tools (Ctrl-Shift-I in Linux)
 
 1. In your Developer Tools, you will notice that assets are loaded from `(Service Worker)`
-2. To see what is cached click on Application -> Cache Storate
+2. To see what is cached click on Application -> Cache Storage
 3. To debug the SW script, go to `chrome://serviceworker-internals/` and check `Open Dev Tools ...` which will start the Service Worker in its own Developer Tools
  
  
