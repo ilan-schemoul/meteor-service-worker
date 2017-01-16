@@ -38,7 +38,7 @@ This cache is more powerful than caching with proper headers
 Do not worry, if a CSS/JS has changed, the SW will do ask a new version
 if online.
 
-## <a name="how"></a>How the Service Worker is working
+## <a name="how"></a>How Service Worker functions
 
 So here's how this Service Worker is really working, once it's installed
 (after the client has visited your website once) :
@@ -60,19 +60,37 @@ to the hash of cached file, if it is newer he tries to ask the server
 for the new version and cache it, otherwise he just serves the cached asset.
 Once the browser has the CSS/JS files he can start rendering your app.
 
-## How to get the Service Worker for my Meteor website ?
+## How to get Service Worker on my Meteor App?
 
-1. Download sw.js and put it in your /public folder.
-2. Register your Service Worker to the client by putting 
-  `navigator.serviceWorker.register('/sw.js').then()
-  .catch(error => console.log(error));`
-  into a `Meteor.startup()` loaded **client-side only**.  
-3. Service Workers are only available to **secure origins** as HTTPS or
-localhost (the URL you access when you make local development). So as
-the Service Worker will only cache secure origin be sure that **all domain**
-you made request from, even subdomain or CDN, have HTTPS enabled.
-  
-## Special information
+1. Download sw.js and put it in your /public folder **Warning:** It has to be in the root of the /public folder for the Service Worker to have the same scope as your app / web app.
+2. Register your Service Worker in your **client**: 
+```
+Meteor.startup(function() {
+  if (!Meteor.isCordova && 'serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/sw.js').then(function(registration) {
+        // Registration was successful
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      }).catch(function(err) {
+        // registration failed :(
+        console.log('ServiceWorker registration failed: ', err);
+      });
+    });
+  }
+});
+```
+**Important:** Service Workers are only available to **secure origins** as HTTPS or
+localhost (the URL you access when you make local development). 
+ 
+## Debugging Information (Chrome)
+All instructions below require you to to launch your Developer Tools (Ctrl-Shift-I in Linux)
+
+1. In your Developer Tools, you will notice that assets are loaded from `(Service Worker)`
+2. To see what is cached click on Application -> Cache Storate
+3. To debug the SW script, go to `chrome://serviceworker-internals/` and check `Open Dev Tools ...` which will start the Service Worker in its own Developer Tools
+ 
+ 
+## Additional information
 
 ### Compatibility 
 
