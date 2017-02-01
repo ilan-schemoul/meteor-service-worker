@@ -23,12 +23,12 @@ self.addEventListener('fetch', (event) => {
     if (cached) {
       const resourceType = cached.headers.get('content-type');
       // We only return non css/js/html cached response e.g images
-      if (!hasHash(event.request.url) && !/text\/html/.test(resourceType)) {
+      if (!hasHash(event.request.url)) {
         return cached;
       }
 
       // If the CSS/JS didn't change since it's been cached, return the cached version
-      if (hasHash(event.request.url) && hasSameHash(event.request.url, cached.url)) {
+      if (hasSameHash(event.request.url, cached.url)) {
         return cached;
       }
     }

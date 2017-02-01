@@ -39,7 +39,7 @@ This cache is more powerful than simply caching with proper headers
 If one or multiple CSS/JS files have changed the SW detect it and replace the old 
 JS/CSS by the new one.
 
-## <a name="how"></a>How the Service Worker is working
+## <a name="how"></a>How Service Worker functions
 
 The SW is basically a network proxy so every request made by the website go through 
 the SW.
@@ -56,24 +56,40 @@ it the case the SW returns the cached version otherwise it asks for a new versio
 and caches it.
 
 Once the browser has the CSS/JS files he can start rendering your app.
+ 
+## Debugging Information (Chrome)
+All instructions below require you to to launch your Developer Tools (Ctrl-Shift-I in Linux)
 
+1. In your Developer Tools -> Network, you will notice that assets are loaded from `(Service Worker)`
+2. To see what is cached click on Application -> Cache Storage
+3. To debug the SW script, go to `chrome://serviceworker-internals/` and check `Open Dev Tools ...` which will start the Service Worker in its own Developer Tools
+ 
+ 
+## Additional information
+=======
 For other assets than CSS/JS (e.g : http://test.com/img.png) the SW caches the asset and returns
 the cached version each time it's asked by the website.
 
 ## How to get the Service Worker for my Meteor website ?
 
-1. Download sw.js and put it in your /public folder.
-2. Register your Service Worker to the client by putting 
-  `navigator.serviceWorker.register('/sw.js').then()
-  .catch(error => console.log(error));`
+1. Download sw.js and put it in your /public folder **Warning:** It has to be in the root of the /public folder for the Service Worker to have the same scope as your app / web app.
+2. Register your Service Worker in your **client** : 
+```
+Meteor.startup(() => {
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').then().catch((err) => {
+        console.log('ServiceWorker registration failed: ', err);
+      });
+    });
+  }
+});
+```
   into a `Meteor.startup()` loaded **client-side only**.  
 
 Service Workers are only available to **secure origins**. So be sure your server has
 https (localhost is considered as secure). And that the website you made request to are
 considered as secure, so that even your subdomain or your CDN have HTTPS enabled.
-
-  
-## Special information
 
 ### Compatibility 
 
