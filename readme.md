@@ -39,7 +39,7 @@ This cache is more powerful than simply caching with proper headers
 If one or multiple CSS/JS files have changed the SW detect it and replace the old 
 JS/CSS by the new one.
 
-## <a name="how"></a>How the Service Worker is working
+## <a name="how"></a>How the Service Worker functions
 
 The SW is basically a network proxy so every request made by the website go through 
 the SW.
@@ -60,20 +60,28 @@ Once the browser has the CSS/JS files he can start rendering your app.
 For other assets than CSS/JS (e.g : http://test.com/img.png) the SW caches the asset and returns
 the cached version each time it's asked by the website.
 
-## How to get the Service Worker for my Meteor website ?
+## How to get the Service Worker on my Meteor App ?
 
-1. Download sw.js and put it in your /public folder.
-2. Register your Service Worker to the client by putting 
-  `navigator.serviceWorker.register('/sw.js').then()
-  .catch(error => console.log(error));`
-  into a `Meteor.startup()` loaded **client-side only**.  
-
+1. Download sw.js and put it in the **root** of the /public folder.
+2. Register your Service Worker to the client in your client : 
+  `Meteor.startup(() => {
+  navigator.serviceWorker.register('/sw.js')
+  .then()
+  .catch(error => console.log('ServiceWorker registration failed: ', err));
+  });`
 Service Workers are only available to **secure origins**. So be sure your server has
 https (localhost is considered as secure). And that the website you made request to are
-considered as secure, so that even your subdomain or your CDN have HTTPS enabled.
+considered as secure. So your subdomain or your CDN must have HTTPS enabled.
 
   
 ## Special information
+
+### Debugging Information (Chrome)
+All instructions below require you to to launch your Developer Tools (Ctrl-Shift-I in Linux)
+
+In your Developer Tools, you will notice that assets are loaded from `(Service Worker)`
+To see what is cached click on Application -> Cache Storate
+To debug the SW script, go to `chrome://serviceworker-internals/` and check `Open Dev Tools ...` which will start the Service Worker in its own Developer Tools 
 
 ### Compatibility 
 
@@ -81,9 +89,12 @@ Service Worker is pretty new so the support may not be full. All major
 browsers either support Service Worker or states that it's in their plan.
 Support can be check on [caniuse.com](http://caniuse.com#feat=serviceworkers)
 
-### Special information  
+### Request from an external website URL 
 
-- If you want third-party URL to be cache, it needs to have CORS enabled.
+- If you want a request from a third-party URL to be cached, you must make a cross-origin request and
+and the resource you're requesting must returns proper headers to allow requests.
+
+### More explanation
 
 - `HTMLToCache` is the URL the Service Worker will first ask to the server
 to get the HTML, which is the same in any page of your website, it just
@@ -93,7 +104,7 @@ accessible by the default value of HTMLToCache (which is the URL of your
 website with / at the end). You can change the value of the variable to
 another relative url (as '/index').
 
-- More explanations : the SW caches only one HTML for all the website
+- The SW caches only one HTML for all the website
 because it's always the same. It does **not** contain the DOM, JS files
 create the DOM. Also the SW never returns cached HTML if the client is online because
 otherwise it will create an infinite loop if hot reload is enabled : if the HTML the SW serves
