@@ -72,16 +72,21 @@ self.addEventListener('fetch', (event) => {
 });
 
 function removeHash(element) {
-  if (typeof element === 'string') return element.split('?hash=')[0];
+  if (typeof element === 'string') {
+    var url = new URL(element);
+    return url.pathname.replace(".js", "").replace(".css", "").replace("/", "");
+  }
 }
 
 function hasHash(element) {
-  if (typeof element === 'string') return /\?hash=.*/.test(element);
+  if (typeof element === 'string') return /\?meteor_js_resource=true|meteor_css_resource=true.*/.test(element);
 }
 
 function hasSameHash(firstUrl, secondUrl) {
   if (typeof firstUrl === 'string' && typeof secondUrl === 'string') {
-    return /\?hash=(.*)/.exec(firstUrl)[1] === /\?hash=(.*)/.exec(secondUrl)[1];
+    var first = new URL(firstUrl).pathname.replace(".js", "").replace(".css", "").replace("/", "");
+    var last = new URL(secondUrl).pathname.replace(".js", "").replace(".css", "").replace("/", "");
+    return first === last;
   }
 }
 
