@@ -1,7 +1,7 @@
 # Meteor Service Worker - An universal Service Worker for meteor apps.
 
 Long story short : if you want this to be a package upvote
-[@mitar's proposal](https://github.com/meteor/meteor/issues/6222).
+[@mitar's proposal](https://github.com/meteor/meteor-feature-requests/issues/19)
 
 ## The problem
 
@@ -136,7 +136,8 @@ we carry on serving an old cache we create an infinite loop.
     from cache even when there's connection with the server (if name, including
     hash= didn't changed).
     - Add a license (please do not delete it).
-+ 0.3.1 - Update Readme.md    
++ 0.3.1 - Update Readme.md  
++ 0.3.2 - Updated Readme.md with new @mitar's proposal, instead of [(previous proposal)](https://github.com/meteor/meteor/issues/6222).
 
 ### About the repository itself
 
