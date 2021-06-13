@@ -18,10 +18,10 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   
   // inspect each event request url in the console
-  console.log("event request indexOf & url:", event.request.url.indexOf('http'), event.request.url);
+  console.log("event request startsWith & url:", event.request.url.startsWith('http'), event.request.url);
   
-  // only proccesses http:// & https:// requests, prevents chrome-extention:// errors
-  if (event.request.url.indexOf('http') === 0){
+  // only processes http:// & https:// requests, prevents chrome-extention:// errors
+  if (event.request.url.startsWith('http')){
   
     const requestToFetch = event.request.clone();
     event.respondWith(
