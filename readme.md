@@ -1,52 +1,13 @@
 # Meteor Service Worker - An universal Service Worker for meteor apps.
 
-Long story short : if you want this to be a package upvote
-[@mitar's proposal](https://github.com/meteor/meteor-feature-requests/issues/19)
-
-## The problem
-
-By default, Meteor has mechanisms to keep working once offline :
-- Methods : If the client is disconnected, methods will resume once logged again (if the tab
-is not closed) :
-> If a client calls a method and is disconnected before it receives a
-response, it will re-call the method when it reconnects
-
-- Each client has a offline database (minimongo)
-synced with online's one when the client is connected to the server.
-- Pages can be generated offline with a client-side router as FlowRouter.
-
-So you can be disconnected of the server and your application is working 
-perfectly and synchronise to the server **as long as you don't close your tab**. But if
-the client isn't connected, for whatever reasons (server down, no connection),
-he cannot use your website.
-
-## The solution
-
-To make Meteor working offline we just need to cache javascript and
-CSS files so we can return them from the cache if the user cannot connect to the server.
-
-**Service Worker** is the solution to make the website working offline.
-Due to specificities of Meteor, usual snippets of Service Worker (SW) don't work with Meteor.
-Service Worker caches JS files (mandatory for any Meteor app) but also the
-CSS, fonts, images or whatever asset that is requested from your server or another one
- at least once by your webiste.
-The Service Worker caches assets **not databases**, in order to cache databases 
+The Service Worker caches assets (e.g : JS, CSS, fonts, medias) **not databases**, in order to cache databases 
 you need [ground:db](https://github.com/GroundMeteor/db)
 
-The SW returns cached version even when online, so you're app is faster.
-This cache is more powerful than simply caching with proper headers
-(leverage browser caching) as SW has an higher priority.
+The SW returns cached version even when online, so your app is faster.
 If one or multiple CSS/JS files have changed the SW detect it and replace the old 
 JS/CSS by the new one.
 
-## <a name="how"></a>How the Service Worker functions
-
-The SW is basically a network proxy so every request made by the website go through 
-the SW.
-So here's how this Service Worker is dealing with Meteor :
-
-1. The Service Worker asks the server the HTML which with Meteor is really the same
-whatever the URL is and is *only* composed of `<link>` and `<script>` requesting CSS and
+1. The Service Worker asks the server the HTML. Whatever the URL the HTML is the same is and is *only* composed of `<link>` and `<script>` requesting CSS and
 Javascript files.
 - If the server didn't give the HTML, the SW returns the cached version of it.
 2. The browser has the HTML, so it ask for CSS/JS which are in the format
@@ -84,10 +45,8 @@ To see what is cached click on Application -> Cache Storate
 To debug the SW script, go to `chrome://serviceworker-internals/` and check `Open Dev Tools ...` which will start the Service Worker in its own Developer Tools 
 
 ### Compatibility 
-
-Service Worker is pretty new so the support may not be full. All major
-browsers either support Service Worker or states that it's in their plan.
-Support can be check on [caniuse.com](http://caniuse.com#feat=serviceworkers)
+Every modern browsers support Service Workers.
+Support can be check at [caniuse.com](http://caniuse.com#feat=serviceworkers)
 
 ### Request from an external website URL 
 
@@ -105,14 +64,9 @@ website with / at the end). You can change the value of the variable to
 another relative url (as '/index').
 
 - The SW caches only one HTML for all the website
-because it's always the same. It does **not** contain the DOM, JS files
+because it's always the same. It does **not** contain the DOM, JS files 
 create the DOM. Also the SW never returns cached HTML if the client is online because
-otherwise it will create an infinite loop if hot reload is enabled : if the HTML the SW serves
-is different than the one on the server
-(e.g : you changed a CSS file so the hash of the href of the `<link>` tag changes), old
-JS/CSS are asked to the server and hot reload package is going to refresh your browser so you can
-get the new HTML with `<script>` and `<link>` with href targeting URLs to new JS/CSS files. But if
-we carry on serving an old cache we create an infinite loop.
+otherwise it will create an infinite loop if hot reload is enabled as the cached HTML may ask for older JS which triggers a refresh.
 
 ### <a name="version"></a> Changelog
 
@@ -138,14 +92,5 @@ we carry on serving an old cache we create an infinite loop.
     - Add a license (please do not delete it).
 + 0.3.1 - Update Readme.md  
 + 0.3.2 - Updated Readme.md with new @mitar's proposal, instead of [(previous proposal)](https://github.com/meteor/meteor/issues/6222).
-
-### About the repository itself
-
-I would be glad to have any contribution : PR, open issues etc.
-
-I would like to make this SW a package so it could be dramatically improved (see todo list for some ideas I could implement)
-but as for now Meteor don't allow to make a package that register a worker. @Mitar has proposed
-to make a PR but Meteor's team refuses it because there's no enough support for this features.
-So if you want to have Meteor packages that can register workers so, for instance,
-I could make a package that would make the SW easier to install with a constructor which accept 
-option so the SW can be modular please upvote Mitar's post (https://github.com/meteor/meteor/issues/6222).
+## Status of this project
+I do not use Meteor anymore for multiple years therefore I do not maintain this project actively anymore. I am open to accept a motivated maintainer. I may still review PR and issues from times to times.
