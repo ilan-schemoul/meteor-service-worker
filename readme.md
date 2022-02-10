@@ -28,7 +28,7 @@ the cached version each time it's asked by the website.
   `Meteor.startup(() => {
   navigator.serviceWorker.register('/sw.js')
   .then()
-  .catch(error => console.log('ServiceWorker registration failed: ', err));
+  .catch(error => console.log('ServiceWorker registration failed: ', error));
   });`
 Service Workers are only available to **secure origins**. So be sure your server has
 https (localhost is considered as secure). And that the website you made request to are
