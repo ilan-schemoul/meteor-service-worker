@@ -15,11 +15,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-self.addEventListener('fetch', (event) => {
-  
-  // inspect each event request url in the console
-  console.log("event request startsWith & url:", event.request.url.startsWith('http'), event.request.url);
-  
+self.addEventListener('fetch', (event) => {  
   // only processes http:// & https:// requests, prevents chrome-extention:// errors
   if (event.request.url.startsWith('http')){
   
