@@ -1,10 +1,5 @@
 # Meteor Service Worker - An universal Service Worker for meteor apps.
 
-The Service Worker caches assets (e.g : JS, CSS, fonts, medias) **not databases**, in order to cache databases 
-you need [ground:db](https://github.com/GroundMeteor/db)
-
-The SW returns cached version even when online, so your app is faster.
-If one or multiple CSS/JS files have changed the SW detect it and replace the old JS/CSS by the new one.
 
 ## How to get the Service Worker on my Meteor App ?
 
@@ -20,6 +15,10 @@ Service Workers are only available to **secure origins**. So be sure your server
 ## How it works
 1. The SW makes a network request for the HTML (all HTML pages are the same with Meteor). If it receives no answer the SW returns the cached version.
 2. The HTML requires files in the format `file.js?hash=XXX` where XXX is the hash. Thanks to this hash the SW knows if the cache has the latest version or if it has to make a network request.
+
+## Can I cache my databases ?
+
+No, service workers are for caching assets (images, videos, js, css etc.)
 
 ## Looking for maintainers
 
